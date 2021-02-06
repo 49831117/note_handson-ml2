@@ -66,7 +66,7 @@ def fetch_housing_data(housing_url = HOUSING_URL, housing_path = HOUSING_PATH):
     housing_tgz.close()
 ```
     
-    接著用 pandas 載入資料
+接著用 pandas 載入資料
 
 ```python
 import pandas
