@@ -34,7 +34,7 @@
 
 ### 選擇性能指標
 1. RMSE 
-   $$ RMSE(X, h) = \sqrt{\frac{1}{m} \sum_{i=1}^m ((h(X)^(i))-y^(i))^2}$$
+$$ RMSE(X, h) = \sqrt{\frac{1}{m} \sum_{i=1}^m ((h(X)^(i))-y^(i))^2}$$
 2. MAE
 
 
