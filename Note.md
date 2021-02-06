@@ -65,7 +65,9 @@ def fetch_housing_data(housing_url = HOUSING_URL, housing_path = HOUSING_PATH):
     housing_tgz.extractall(path = housing_path)
     housing_tgz.close()
 ```
+    
     接著用 pandas 載入資料
+
 ```python
 import pandas
 
@@ -124,7 +126,7 @@ def load_housing_data(housing_path = HOUSING_PATH):
             in_test_set = ids.apply(lambda id_: test_set_check(id_, test_ratio))
             return data.loc[~in_test_set], data.loc[in_test_set]
         ```
-        
+
         
             
 
