@@ -15,22 +15,19 @@
 
 ### 真實的資料
 - 熱門的開放資料存放區
+
 [UC Irvine Machine Learning Repository](http://archive.ics.uci.edu/ml/)
-
 [Kaggle datasets](https://www.kaggle.com/datasets)
-
 [Amazon's AWS datasets](https://registry.opendata.aws/)
 - 中繼網站 - 列出許多開放資料存放區
+
 [Data Portals](http://dataportals.org)
-
 [OpenDataMonitor](http://opendatamonitor.eu/)
-
 [Quandl](http://quandl.com/)
 - 羅列熱門開放資料存放區
+ 
 [維基百科 - 機器學習資料組清單](https://homl.info/9)
-
 [Quora.com](https://homl.info/10)
-
 [reddit 的資料組](https://www.reddit.com/r/datasets)
 
 ### 制定問題
