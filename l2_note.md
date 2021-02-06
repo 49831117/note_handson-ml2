@@ -91,8 +91,8 @@ def load_housing_data(housing_path = HOUSING_PATH):
 
 #### 建立測試組
 **避免 overfit**
-- 「資料窺探（data snooping）偏差」
-- 測試組：
+1. 「資料窺探（data snooping）偏差」
+2. 測試組：
     1. 隨機選擇實例（20% 或更少）
         ```python
         import numpy as np
@@ -109,9 +109,13 @@ def load_housing_data(housing_path = HOUSING_PATH):
         len(test_set)
         ```
     2. 缺點：無法完美隔開測試組，應該避免看到整組資料。
+        
         **解決方式：**
-        way1. 第一次執行時儲存測試組，後續執行再載入上述方式。
-        way2. 設定亂數產生的種子
+        way1. 
+        第一次執行時儲存測試組，後續執行再載入上述方式。
+
+        way2. 
+        設定亂數產生的種子
             eg. `np.random.seed()`
                 再呼叫 `np.random.permutation()`讓它永遠產生洗亂過的索引。
         - 不過上述兩種方式將於下次取得更新過的資料組時失效。
@@ -126,7 +130,54 @@ def load_housing_data(housing_path = HOUSING_PATH):
             in_test_set = ids.apply(lambda id_: test_set_check(id_, test_ratio))
             return data.loc[~in_test_set], data.loc[in_test_set]
         ```
-
+        若資料若無識別碼欄位，可將索引當成 ID 來使用。
+        ```python
+        housing_with_id = housing.reset_index() # 加入 index 欄位
+        train_set, test_set = split_train_test_by_id(housing_with_id, 0.2, "index")
+        ```
+        但要將新資料附加到資料組的最後面，且不刪除任何資料，確保使用不改變的特徵建立識別碼。
+        ```python
+        housing_with_id["id"] = housing["longitude"] * 1000 + housing["latitude"]
+        train_set, test_set = split_train_test_by_id(housing_with_id, 0.2, "id")
+        ```
         
-            
+        - **Scikit-Learn `train_test_split()`** 和 `split_train_test()` 很像，也有額外功能。
+          1. 有 `random_state` 參數，設定亂數產生器的種子。
+          2. 將多個列數相同的資料組傳給它，它會在同一個索引拆開它們。
+            ```python
+            from sklearn.model_selection import train_test_split
+            train_set, test_set = train_test_split(housing, test_size = 0.2, random_state = 42)
+            ```
+    3. 抽樣需具有代表性。
+        eg. 分層抽樣 `pandas.cut()`，但要注意層數不宜過多、每一層數量夠多。
+        ```python
+        housing["incom_cat"] = pd.cut(housing["Median_income"], bins = [0., 1.5, 3., 4.5, 6., np.inf], labels = [1, 2, 3, 4, 5])
+        print(housing["income_cat"].hist())
+        ```
+    4. 透過 `Scikit-Learn` 的 `StratifiedShuffleSplit`
+        - [sklearn.model_selection.StratifiedShuffleSplit](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedShuffleSplit.html)
+        ```python
+        from sklearn.model_selection import StratifiedShuffleSplit
 
+        split = StratifiedShuffleSplit(n_split = 1, test_size = 0.2, random_state = 42)
+        
+        for train_index, test_index in split.split(housing, housing["income_cat"]):
+            strat_train_set = housing.loc[train_index]
+            strat_test_set = housing.loc[test_index]
+        
+        # 檢查分類比率
+        print(strat_test_set["income_cat"].value_counts() / len(strat_test_set))
+        ```
+    5. 移除 `income_cat` 屬性，讓資料回到原始狀態。
+        ```python
+        for set_ in (strat_train_set, strat_test_set):
+            set_.drop("income_cat", axis = 1, inplace = True)
+        ```
+3. 建立測試組的複本，以免破壞訓練組。
+    ```python
+    housing = strat_train_set.copy()
+    ```
+4. 將地理資料視覺化
+   ```python
+   housing.plot(kind = "scatter", x = "longitide", y = "latitude", alpha = 0.1)
+   ```
